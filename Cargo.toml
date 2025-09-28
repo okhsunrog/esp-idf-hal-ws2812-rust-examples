@@ -1,0 +1,46 @@
+[package]
+name = "esp-idf-hal-ws2812-rust-examples"
+version = "0.1.0"
+authors = ["okhsunrog <me@okhsunrog.dev>"]
+edition = "2021"
+resolver = "2"
+rust-version = "1.89"
+
+[[bin]]
+name = "ws2812_spi_blocking"
+harness = false
+
+[[bin]]
+name = "ws2812_spi_async"
+harness = false
+
+[[bin]]
+name = "ws2812_rmt_blocking"
+harness = false
+
+[profile.release]
+opt-level = "s"
+
+[profile.dev]
+debug = true    # Symbols are nice and they don't increase the size on Flash
+opt-level = "z"
+
+[dependencies]
+log = "0.4"
+# NOTE: Do not enable `wake-from-isr` feature flag of esp-idf-svc when using `embassy-executor` with `arch-std`.
+# It causes ISR -> pthread Condvar wakeups and aborts on ESP‑IDF.
+esp-idf-svc = { version = "0.51", features = ["alloc", "embassy-sync", "embassy-time-driver"] }
+anyhow = "1"
+embassy-time = { version = "0.5.0" }
+embassy-executor = { version = "0.7.0", features = ["executor-thread", "arch-std"] }
+static_cell = "2.1.1"
+smart-leds = "0.4.0"
+ws2812-spi = { version = "0.5.1", features = ["mosi_idle_high"] }
+ws2812-async = "0.3.0"
+ws2812-esp32-rmt-driver = { version = "0.12.0", features = ["smart-leds-trait"] }
+embedded-hal-async = "1.0.0"
+# --- Temporary workaround for embassy-executor < 0.8 ---
+critical-section = { version = "1.1", features = ["std"], default-features = false }
+
+[build-dependencies]
+embuild = "0.33"
